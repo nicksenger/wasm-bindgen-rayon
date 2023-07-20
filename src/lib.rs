@@ -46,16 +46,8 @@ pub struct wbg_rayon_PoolBuilder {
     receiver: Receiver<rayon::ThreadBuilder>,
 }
 
-#[cfg_attr(
-    not(feature = "no-bundler"),
-    wasm_bindgen(module = "/src/workerHelpers.js")
-)]
-#[cfg_attr(
-    feature = "no-bundler",
-    wasm_bindgen(module = "/src/workerHelpers.no-bundler.js")
-)]
+#[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_name = startWorkers)]
     fn start_workers(module: JsValue, memory: JsValue, builder: wbg_rayon_PoolBuilder) -> Promise;
 }
 
@@ -68,18 +60,6 @@ impl wbg_rayon_PoolBuilder {
             sender,
             receiver,
         }
-    }
-
-    #[cfg(feature = "no-bundler")]
-    #[wasm_bindgen(js_name = mainJS)]
-    pub fn main_js(&self) -> JsString {
-        #[wasm_bindgen]
-        extern "C" {
-            #[wasm_bindgen(js_namespace = ["import", "meta"], js_name = url)]
-            static URL: JsString;
-        }
-
-        URL.clone()
     }
 
     #[wasm_bindgen(js_name = numThreads)]
